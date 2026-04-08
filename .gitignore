@@ -1,0 +1,23 @@
+# Arquivos de configuração sensíveis
+config/database.php
+config/youtube.php
+client_secret_*.json
+*.json
+
+# Arquivos temporários
+*.tmp
+*.log
+
+# Uploads (opcional - remova se quiser incluir)
+uploads/musicas/*
+!uploads/musicas/.gitkeep
+uploads/capas/*
+!uploads/capas/.gitkeep
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

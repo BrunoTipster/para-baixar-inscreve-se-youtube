@@ -1,0 +1,237 @@
+/* =============================================================
+ * Admin CSS — Complementar ao style.css
+ * DJ Bruno Pendrives
+ * ============================================================= */
+
+/* -----------------------------------------------------------
+ * Mobile toggle button for admin sidebar
+ * ----------------------------------------------------------- */
+.admin-mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--cor-texto);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: var(--transicao);
+}
+
+.admin-mobile-toggle:hover {
+  background: rgba(155, 48, 255, 0.15);
+}
+
+/* -----------------------------------------------------------
+ * Mobile sidebar overlay (darkens background when sidebar open)
+ * ----------------------------------------------------------- */
+.admin-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99;
+}
+
+/* -----------------------------------------------------------
+ * Admin tables — horizontal scroll wrapper
+ * ----------------------------------------------------------- */
+.admin-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-table-wrapper table {
+  min-width: 640px;
+}
+
+/* -----------------------------------------------------------
+ * Admin table header — flex-wrap for action buttons
+ * ----------------------------------------------------------- */
+.admin-table-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-table-header .admin-search-input {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.admin-table-header .admin-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* -----------------------------------------------------------
+ * Pagination — responsive
+ * ----------------------------------------------------------- */
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.admin-pagination .page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+/* -----------------------------------------------------------
+ * RESPONSIVE: Tablets & small laptops  (max-width: 1024px)
+ * ----------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: 220px;
+  }
+}
+
+/* -----------------------------------------------------------
+ * RESPONSIVE: Mobile — sidebar hidden, toggle button visible
+ * ----------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Show the hamburger toggle */
+  .admin-mobile-toggle {
+    display: block;
+  }
+
+  /* Sidebar is off-screen by default, slides in when .active */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 260px;
+    height: 100vh;
+    z-index: 100;
+    transition: left 0.3s ease;
+    flex-direction: column;
+    overflow-y: auto;
+    box-shadow: none;
+  }
+
+  .admin-sidebar.active {
+    left: 0;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Overlay becomes visible when sidebar is open */
+  .admin-sidebar-overlay.active {
+    display: block;
+  }
+
+  /* Topbar */
+  .admin-topbar {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  /* Content area */
+  .admin-content {
+    padding: 16px;
+  }
+
+  /* Stats grid — 2 columns on mobile */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Form card — reduced padding */
+  .form-card {
+    padding: 20px 16px;
+  }
+
+  .form-card .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Table header — allow buttons to wrap */
+  .admin-table-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-table-header .admin-search-input {
+    flex: 1 1 100%;
+  }
+
+  .admin-table-header .admin-header-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* -----------------------------------------------------------
+ * RESPONSIVE: Very small phones  (max-width: 480px)
+ * ----------------------------------------------------------- */
+@media (max-width: 480px) {
+  /* Stats grid — single column */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Topbar — tighter padding */
+  .admin-topbar {
+    padding: 10px 12px;
+  }
+
+  .admin-topbar h1,
+  .admin-topbar .admin-page-title {
+    font-size: 1.1rem;
+  }
+
+  /* Content area — minimal padding */
+  .admin-content {
+    padding: 12px;
+  }
+
+  /* Form card — minimal padding */
+  .form-card {
+    padding: 16px 12px;
+  }
+
+  /* Pagination — smaller links */
+  .admin-pagination {
+    gap: 4px;
+  }
+
+  .admin-pagination .page-link {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.78rem;
+    padding: 0 8px;
+  }
+
+  /* Table header buttons — full width on tiny screens */
+  .admin-table-header .admin-header-actions {
+    flex-direction: column;
+  }
+
+  .admin-table-header .admin-header-actions a,
+  .admin-table-header .admin-header-actions button {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Admin sidebar — slightly narrower */
+  .admin-sidebar {
+    width: 240px;
+    left: -260px;
+  }
+}

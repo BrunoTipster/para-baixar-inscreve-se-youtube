@@ -1,0 +1,224 @@
+DJ BRUNO PENDRIVES — GUIA DE INSTALAÇÃO COMPLETO
+=================================================
+Sistema de Downloads com Verificação de Inscrição YouTube
+=================================================
+
+PRÉ-REQUISITOS:
+--------------
+- Laragon instalado (https://laragon.org)
+- PHP 8.0 ou superior
+- MySQL 5.7 ou superior
+- Extensões PHP ativas: pdo, pdo_mysql, openssl, json, fileinfo
+
+=================================================
+PASSO 1 — CONFIGURAR O BANCO DE DADOS
+=================================================
+
+1. Abra o Laragon e inicie os serviços (Start All)
+2. Abra o phpMyAdmin: http://localhost/phpmyadmin
+   (ou clique em Laragon > Database > phpMyAdmin)
+3. Na aba "SQL", cole o conteúdo do arquivo database.sql e execute
+   OU importe o arquivo: Importar > Escolher arquivo > database.sql
+
+Resultado esperado: banco "dj_bruno_pendrives" criado com as tabelas:
+  - usuarios
+  - musicas
+  - downloads
+  - admins (já com usuário admin/admin123)
+
+=================================================
+PASSO 2 — CREDENCIAIS DO BANCO (se necessário)
+=================================================
+
+Abra: config/database.php
+
+Altere se o seu Laragon usar configurações diferentes:
+  define('DB_HOST', 'localhost');   // host padrão
+  define('DB_NAME', 'dj_bruno_pendrives');
+  define('DB_USER', 'root');         // usuário padrão do Laragon
+  define('DB_PASS', '');             // sem senha por padrão
+
+=================================================
+PASSO 3 — CONFIGURAR GOOGLE OAUTH + YOUTUBE API
+=================================================
+
+A. Acesse o Google Cloud Console:
+   https://console.cloud.google.com/
+
+B. Crie um novo projeto (ex: "DJ Bruno Pendrives")
+
+C. Ative as APIs:
+   - YouTube Data API v3
+     → APIs & Services > Library > pesquise "YouTube Data API v3" > Enable
+   - Google OAuth 2.0 (já disponível por padrão)
+
+D. Crie credenciais OAuth:
+   → APIs & Services > Credentials > Create Credentials > OAuth 2.0 Client ID
+   
+   Tipo: Web Application
+   Nome: DJ Bruno Pendrives
+   
+   URIs de redirecionamento autorizados:
+   http://localhost/youtube/callback.php
+   
+   URIs de origem JS autorizados:
+   http://localhost
+
+E. Copie o Client ID e Client Secret gerados
+
+F. Abra: config/youtube.php
+   E substitua:
+   
+   define('GOOGLE_CLIENT_ID', 'SEU_CLIENT_ID_AQUI.apps.googleusercontent.com');
+   define('GOOGLE_CLIENT_SECRET', 'SEU_CLIENT_SECRET_AQUI');
+
+G. Para obter o CHANNEL_ID do canal @Hosttimerkelvin:
+   - Acesse: https://www.youtube.com/@Hosttimerkelvin/about
+   - Com a extensão "YouTube Channel ID Finder" ou via API:
+     https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=Hosttimerkelvin&key=SUA_API_KEY
+   
+   Substitua em config/youtube.php:
+   define('YOUTUBE_CHANNEL_ID', 'UC...........');  // ID real do canal
+
+IMPORTANTE: Para obter uma API Key do YouTube:
+   → APIs & Services > Credentials > Create Credentials > API Key
+
+=================================================
+PASSO 4 — PERMISSÕES DE PASTAS (Upload)
+=================================================
+
+Certifique-se que as pastas abaixo existem e têm permissão de escrita:
+  uploads/capas/
+  uploads/musicas/
+
+No Windows/Laragon, normalmente não há problema de permissões.
+Em Linux, execute: chmod -R 755 uploads/
+
+=================================================
+PASSO 5 — ACESSAR O SISTEMA
+=================================================
+
+Site principal:
+  http://localhost/youtube/
+
+Painel administrativo:
+  http://localhost/youtube/admin/login.php
+
+Credenciais do admin:
+  Usuário: admin
+  Senha:   admin123
+
+IMPORTANTE: Troque a senha do admin após o primeiro acesso!
+  → Acesse o phpMyAdmin
+  → Tabela: admins
+  → Execute: UPDATE admins SET senha = '...' WHERE usuario = 'admin';
+  → Gere o hash em PHP: echo password_hash('NOVA_SENHA', PASSWORD_BCRYPT);
+
+=================================================
+PASSO 6 — ADICIONAR MÚSICAS
+=================================================
+
+1. Faça login no painel: http://localhost/youtube/admin/login.php
+2. Acesse: Gerenciar Músicas
+3. Preencha título, artista, gênero
+4. Faça upload da capa (JPG/PNG/WebP, máx 5MB)
+5. Faça upload do arquivo de música (MP3/WAV, qualquer tamanho)
+6. Clique em "Adicionar Música"
+
+As músicas aparecem automaticamente na página principal!
+
+=================================================
+PASSO 7 — TESTAR O FLUXO COMPLETO
+=================================================
+
+1. Acesse: http://localhost/youtube/
+2. Clique em qualquer botão de download → deve pedir login
+3. Clique em "Login com Google" → autentica via OAuth
+4. Após login:
+   - Se já inscrito no canal: downloads liberados imediatamente ✅
+   - Se não inscrito: aparece aviso com botão para se inscrever
+5. Após se inscrever, clique em "Já me Inscrevi" → sistema verifica e libera
+
+=================================================
+ESTRUTURA DE PASTAS DO PROJETO
+=================================================
+
+youtube/
+├─ index.php               ← Página principal
+├─ login.php               ← Login com Google
+├─ callback.php            ← Retorno OAuth
+├─ download.php            ← Handler de download
+├─ logout.php              ← Logout
+├─ database.sql            ← Script do banco
+│
+├─ config/
+│   ├─ database.php        ← Conexão MySQL
+│   ├─ youtube.php         ← OAuth + YouTube API
+│   └─ session.php         ← Sessão segura
+│
+├─ api/
+│   ├─ check-subscription.php   ← Endpoint JSON verificar inscrição
+│   └─ update-subscription.php  ← Endpoint JSON atualizar status
+│
+├─ admin/
+│   ├─ index.php           ← Dashboard
+│   ├─ login.php           ← Login admin
+│   ├─ logout.php          ← Logout admin
+│   ├─ musicas.php         ← CRUD de músicas
+│   ├─ usuarios.php        ← Listagem de usuários
+│   └─ partials/
+│       └─ sidebar.php     ← Menu lateral
+│
+├─ assets/
+│   ├─ css/
+│   │   ├─ style.css       ← CSS global
+│   │   └─ admin.css       ← CSS do admin
+│   └─ js/
+│       └─ main.js         ← JavaScript principal
+│
+└─ uploads/
+    ├─ capas/              ← Imagens de capa
+    └─ musicas/            ← Arquivos de áudio
+
+=================================================
+SEGURANÇA IMPLEMENTADA
+=================================================
+
+✅ PDO com prepared statements (anti SQL Injection)
+✅ OAuth com validação CSRF (state token)
+✅ Sessão com regeneração de ID
+✅ Verificação server-side do status de inscrição
+✅ Inputs sanitizados com htmlspecialchars/filter_input
+✅ Senhas admin com bcrypt
+✅ Headers de segurança no download
+✅ Limitação de tipo de arquivo no upload
+
+=================================================
+PROBLEMAS COMUNS
+=================================================
+
+PROBLEMA: "Erro de conexão com o banco"
+SOLUÇÃO: Verifique se o MySQL está rodando no Laragon
+         e se as credenciais em config/database.php estão corretas.
+
+PROBLEMA: Login Google não funciona
+SOLUÇÃO: Verifique se o REDIRECT_URI em config/youtube.php
+         é IDÊNTICO ao cadastrado no Google Cloud Console.
+
+PROBLEMA: "Inscrição não detectada"
+SOLUÇÃO: - Confirme que o YOUTUBE_CHANNEL_ID está correto (não o handle, o ID UC...)
+         - A verificação pode demorar alguns segundos após inscrição
+         - Tente clicar em "Já me Inscrevi" algumas vezes
+
+PROBLEMA: Upload de arquivo falha
+SOLUÇÃO: - Verifique se a pasta uploads/ existe
+         - No Laragon, verifique o php.ini:
+           upload_max_filesize = 50M
+           post_max_size = 60M
+
+=================================================
+SUPORTE
+=================================================
+
+Canal YouTube: https://www.youtube.com/@Hosttimerkelvin
+Sistema desenvolvido especificamente para DJ Bruno Pendrives
